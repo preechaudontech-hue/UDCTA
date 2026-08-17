@@ -62,7 +62,7 @@ app.get("/checkin", async (req, res, next) => {
     let rows = [];
     if (room) {
       const { rows: students } = await pool.query(
-        "SELECT * FROM students WHERE active = TRUE AND class_room = $1 ORDER BY full_name",
+        "SELECT * FROM students WHERE active = TRUE AND class_room = $1 ORDER BY student_code",
         [room]
       );
       const studentIds = students.map((s) => s.id);
@@ -252,7 +252,7 @@ app.get("/reports", async (req, res, next) => {
        LEFT JOIN uniform_checks u ON u.student_id = s.id AND u.check_date = a.check_date
        WHERE s.active = TRUE ${roomFilter}
        GROUP BY s.id
-       ORDER BY s.class_room, s.full_name`,
+       ORDER BY s.class_room, s.student_code`,
       params
     );
 
@@ -283,7 +283,7 @@ app.get("/api/reports/export", async (req, res, next) => {
        JOIN attendance a ON a.student_id = s.id AND a.check_date BETWEEN $1 AND $2
        LEFT JOIN uniform_checks u ON u.student_id = s.id AND u.check_date = a.check_date
        WHERE s.active = TRUE ${roomFilter}
-       ORDER BY a.check_date, s.class_room, s.full_name`,
+       ORDER BY a.check_date, s.class_room, s.student_code`,
       params
     );
 
