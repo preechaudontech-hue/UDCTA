@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+<h1 class="mb-4 text-xl font-bold text-gray-800">นำเข้ารายชื่อนักเรียนทุน กสศ.</h1>
+<div class="card space-y-4">
+  <p class="rounded-lg bg-brand-light p-3 text-sm text-gray-700">
+    ไฟล์ Excel (.xlsx) หรือ CSV ต้องมีคอลัมน์: <strong>รหัสนักศึกษา</strong>, <strong>ชื่อ-สกุล</strong>,
+    <strong>ระดับชั้น/ห้อง</strong> และคอลัมน์ <strong>สาขาวิชา</strong> (ไม่บังคับ)
+  </p>
+  <form id="import-form" class="space-y-3">
+    <input
+      class="block w-full rounded-lg border border-gray-300 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-2 file:text-sm file:font-medium file:text-white"
+      type="file" name="file" id="file-input" accept=".csv,.xlsx,.xls" required
+    >
+    <button type="submit" class="btn-primary w-full">นำเข้า</button>
+  </form>
+  <div id="import-result" class="text-sm font-medium"></div>
+</div>
+
+<script>
+document.getElementById('import-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fileInput = document.getElementById('file-input');
+  const resultDiv = document.getElementById('import-result');
+  if (!fileInput.files.length) return;
+
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+
+  resultDiv.textContent = 'กำลังนำเข้า...';
+  resultDiv.className = 'text-sm font-medium text-gray-500';
+  try {
+    const res = await fetch('/api/students/import', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+    if (data.ok) {
+      resultDiv.textContent = `นำเข้าสำเร็จ ${data.imported} รายการ`;
+      resultDiv.className = 'text-sm font-medium text-emerald-600';
+    } else {
+      resultDiv.textContent = `เกิดข้อผิดพลาด: ${data.error}`;
+      resultDiv.className = 'text-sm font-medium text-rose-600';
+    }
+  } catch (err) {
+    resultDiv.textContent = `เกิดข้อผิดพลาด: ${err}`;
+    resultDiv.className = 'text-sm font-medium text-rose-600';
+  }
+});
+</script>
+<%- include('partials/footer') %>

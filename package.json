@@ -1,0 +1,23 @@
+{
+  "name": "udcta-kasetsart-fund-checkin",
+  "version": "1.0.0",
+  "description": "ระบบเช็คชื่อเข้าแถว + ตรวจเครื่องแต่งกาย นักเรียนทุน กสศ. แผนกเทคโนโลยีสารสนเทศ วิทยาลัยเทคนิคอุดรธานี",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "build": "tailwindcss -i ./public/src/input.css -o ./public/style.css --minify",
+    "start": "npm run build && node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "multer": "^2.0.1",
+    "pg": "^8.12.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

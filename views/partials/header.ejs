@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= typeof title !== 'undefined' ? title : 'ระบบเช็คชื่อนักเรียนทุน กสศ.' %></title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+<header class="sticky top-0 z-10 bg-brand text-white shadow">
+  <div class="mx-auto max-w-2xl px-4 py-3">
+    <p class="text-sm font-semibold leading-tight sm:text-base">เช็คชื่อ &amp; ตรวจเครื่องแต่งกาย นักเรียนทุน กสศ.</p>
+    <p class="text-xs text-white/80">แผนกเทคโนโลยีสารสนเทศ วิทยาลัยเทคนิคอุดรธานี</p>
+  </div>
+  <nav class="mx-auto flex max-w-2xl gap-1 px-2 pb-2 text-sm">
+    <a href="/" class="rounded-md px-3 py-1.5 hover:bg-white/10">หน้าแรก</a>
+    <a href="/import" class="rounded-md px-3 py-1.5 hover:bg-white/10">นำเข้ารายชื่อ</a>
+    <a href="/reports" class="rounded-md px-3 py-1.5 hover:bg-white/10">รายงาน</a>
+  </nav>
+</header>
+<main class="mx-auto max-w-2xl px-3 py-4 sm:px-4 sm:py-6">

@@ -1,0 +1,109 @@
+<%- include('partials/header') %>
+<h1 class="mb-4 text-xl font-bold text-gray-800">เช็คชื่อ &amp; ตรวจเครื่องแต่งกาย</h1>
+
+<form method="get" class="card mb-4 space-y-3">
+  <div>
+    <label class="field-label" for="date">วันที่</label>
+    <input class="field-input" type="date" id="date" name="date" value="<%= checkDate %>">
+  </div>
+  <div>
+    <label class="field-label" for="room">ห้อง/สาขา</label>
+    <select class="field-input" id="room" name="room">
+      <option value="">-- เลือกห้อง --</option>
+      <% rooms.forEach(function(r) { %>
+      <option value="<%= r %>" <%= r === room ? 'selected' : '' %>><%= r %></option>
+      <% }) %>
+    </select>
+  </div>
+  <button type="submit" class="btn-secondary w-full">แสดงรายชื่อ</button>
+</form>
+
+<% if (room && rows.length) { %>
+<div id="save-status" class="save-status mb-3 text-sm font-medium"></div>
+
+<div class="space-y-3 pb-24" id="checkin-list">
+  <% rows.forEach(function(row) { %>
+  <div class="card space-y-3" data-student-id="<%= row.student.id %>">
+    <div>
+      <p class="font-semibold text-gray-800"><%= row.student.full_name %></p>
+      <p class="text-xs text-gray-500">รหัส <%= row.student.student_code %></p>
+    </div>
+
+    <div>
+      <p class="field-label">เข้าแถว</p>
+      <div class="segmented">
+        <% Object.entries(statuses).forEach(function([key, label]) { %>
+        <div class="segmented-option">
+          <input
+            type="radio"
+            class="status-radio peer sr-only"
+            name="status-<%= row.student.id %>"
+            id="status-<%= row.student.id %>-<%= key %>"
+            value="<%= key %>"
+            <%= row.status === key ? 'checked' : '' %>
+          >
+          <label class="segmented-label" for="status-<%= row.student.id %>-<%= key %>"><%= label %></label>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div>
+      <p class="field-label">เครื่องแต่งกาย</p>
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <% uniformItems.forEach(function(item, idx) { %>
+        <div>
+          <p class="mb-1 text-xs text-gray-500"><%= item %></p>
+          <div class="toggle-pair">
+            <div>
+              <input
+                type="radio"
+                class="item-radio peer sr-only"
+                data-item="<%= item %>"
+                name="item-<%= row.student.id %>-<%= idx %>"
+                id="item-<%= row.student.id %>-<%= idx %>-pass"
+                value="pass"
+                <%= (row.items[item] || 'pass') === 'pass' ? 'checked' : '' %>
+              >
+              <label class="toggle-pass-label" for="item-<%= row.student.id %>-<%= idx %>-pass">ผ่าน</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                class="item-radio peer sr-only"
+                data-item="<%= item %>"
+                name="item-<%= row.student.id %>-<%= idx %>"
+                id="item-<%= row.student.id %>-<%= idx %>-fail"
+                value="fail"
+                <%= row.items[item] === 'fail' ? 'checked' : '' %>
+              >
+              <label class="toggle-fail-label" for="item-<%= row.student.id %>-<%= idx %>-fail">ไม่ผ่าน</label>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label">หมายเหตุ</label>
+      <input type="text" class="field-input note-input" value="<%= row.note %>" placeholder="หมายเหตุ (ถ้ามี)">
+    </div>
+  </div>
+  <% }) %>
+</div>
+
+<div class="fixed inset-x-0 bottom-0 z-10 border-t border-gray-200 bg-white/95 px-3 py-3 backdrop-blur">
+  <div class="mx-auto max-w-2xl">
+    <button id="save-btn" type="button" class="btn-primary w-full">บันทึกทั้งหมด</button>
+  </div>
+</div>
+<% } else if (room) { %>
+<p class="rounded-lg bg-gray-100 p-3 text-sm text-gray-600">ไม่พบนักเรียนในห้องนี้</p>
+<% } %>
+
+<script>
+  window.CHECKIN_DATE = <%- JSON.stringify(checkDate) %>;
+</script>
+<script src="/checkin.js"></script>
+<%- include('partials/footer') %>

@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-sm font-medium text-white shadow-sm active:bg-brand-dark sm:text-base;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm active:bg-gray-100 sm:text-base;
+  }
+  .field-label {
+    @apply mb-1 block text-sm font-medium text-gray-600;
+  }
+  .field-input {
+    @apply w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30;
+  }
+  .card {
+    @apply rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-100 sm:p-5;
+  }
+  .segmented {
+    @apply grid grid-cols-3 gap-1.5;
+  }
+  /* Directly on the <label> sibling of its radio input, so Tailwind's
+     peer/peer-checked sibling selector resolves correctly. Do not move this
+     styling behind a wrapper-element descendant selector (e.g. ".segmented
+     label") — the peer input is nested inside the wrapper alongside the
+     label, not a sibling of the wrapper itself, so peer-checked never fires. */
+  .segmented-label {
+    @apply block cursor-pointer rounded-lg border border-gray-300 py-2 text-center text-sm font-medium text-gray-600 peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/40;
+  }
+  .toggle-pair {
+    @apply grid grid-cols-2 gap-1.5;
+  }
+  .toggle-pass-label {
+    @apply block cursor-pointer rounded-lg border border-gray-300 py-1.5 text-center text-xs font-medium text-gray-600 peer-checked:border-emerald-600 peer-checked:bg-emerald-600 peer-checked:text-white sm:text-sm;
+  }
+  .toggle-fail-label {
+    @apply block cursor-pointer rounded-lg border border-gray-300 py-1.5 text-center text-xs font-medium text-gray-600 peer-checked:border-rose-600 peer-checked:bg-rose-600 peer-checked:text-white sm:text-sm;
+  }
+}

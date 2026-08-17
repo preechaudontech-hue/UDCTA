@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<h1 class="mb-4 text-xl font-bold text-gray-800">เช็คชื่อเข้าแถว</h1>
+
+<% if (!rooms.length) { %>
+<p class="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+  ยังไม่มีรายชื่อนักเรียนในระบบ กรุณา<a href="/import" class="font-medium underline">นำเข้ารายชื่อ</a>ก่อน
+</p>
+<% } %>
+
+<form action="/checkin" method="get" class="card space-y-4">
+  <div>
+    <label class="field-label" for="date">วันที่</label>
+    <input class="field-input" type="date" id="date" name="date" value="<%= today %>" required>
+  </div>
+  <div>
+    <label class="field-label" for="room">ห้อง/สาขา</label>
+    <select class="field-input" id="room" name="room" required>
+      <option value="" disabled selected>เลือกห้อง</option>
+      <% rooms.forEach(function(r) { %>
+      <option value="<%= r %>"><%= r %></option>
+      <% }) %>
+    </select>
+  </div>
+  <button type="submit" class="btn-primary w-full">ไปเช็คชื่อ</button>
+</form>
+<%- include('partials/footer') %>
