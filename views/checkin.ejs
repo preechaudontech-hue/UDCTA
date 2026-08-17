@@ -20,42 +20,48 @@
 
 <% if (room && rows.length) { %>
 <div id="save-status" class="save-status mb-3 text-sm font-medium"></div>
+<p class="mb-2 text-xs text-gray-400">เลื่อนซ้าย-ขวาเพื่อดูรายการตรวจทั้งหมด</p>
 
-<div class="space-y-3 pb-24" id="checkin-list">
-  <% rows.forEach(function(row) { %>
-  <div class="card space-y-3" data-student-id="<%= row.student.id %>">
-    <div>
-      <p class="font-semibold text-gray-800"><%= row.student.full_name %></p>
-      <p class="text-xs text-gray-500">รหัส <%= row.student.student_code %></p>
-    </div>
-
-    <div>
-      <p class="field-label">เข้าแถว</p>
-      <div class="segmented">
-        <% Object.entries(statuses).forEach(function([key, label]) { %>
-        <div class="segmented-option">
-          <input
-            type="radio"
-            class="status-radio peer sr-only"
-            name="status-<%= row.student.id %>"
-            id="status-<%= row.student.id %>-<%= key %>"
-            value="<%= key %>"
-            <%= row.status === key ? 'checked' : '' %>
-          >
-          <label class="segmented-label" for="status-<%= row.student.id %>-<%= key %>"><%= label %></label>
-        </div>
+<div class="card overflow-x-auto p-0 pb-24">
+  <table class="w-full border-collapse text-xs">
+    <thead>
+      <tr class="border-b border-gray-200 bg-gray-50 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+        <th class="sticky left-0 z-10 whitespace-nowrap bg-gray-50 px-2 py-1.5 text-left">ชื่อ-สกุล</th>
+        <th class="whitespace-nowrap px-1 py-1.5">เข้าแถว</th>
+        <% uniformItems.forEach(function(item) { %>
+        <th class="whitespace-nowrap px-1 py-1.5"><%= item %></th>
         <% }) %>
-      </div>
-    </div>
-
-    <div>
-      <p class="field-label">เครื่องแต่งกาย</p>
-      <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <th class="whitespace-nowrap px-1 py-1.5 text-left">หมายเหตุ</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50" id="checkin-list">
+      <% rows.forEach(function(row) { %>
+      <tr data-student-id="<%= row.student.id %>">
+        <td class="sticky left-0 z-10 whitespace-nowrap bg-white px-2 py-1">
+          <p class="font-medium text-gray-800"><%= row.student.full_name %></p>
+          <p class="text-[10px] text-gray-400"><%= row.student.student_code %></p>
+        </td>
+        <td class="px-1 py-1">
+          <div class="flex gap-0.5">
+            <% Object.entries(statuses).forEach(function([key, label]) { %>
+            <span>
+              <input
+                type="radio"
+                class="status-radio peer sr-only"
+                name="status-<%= row.student.id %>"
+                id="status-<%= row.student.id %>-<%= key %>"
+                value="<%= key %>"
+                <%= row.status === key ? 'checked' : '' %>
+              >
+              <label class="pill-label" for="status-<%= row.student.id %>-<%= key %>"><%= label %></label>
+            </span>
+            <% }) %>
+          </div>
+        </td>
         <% uniformItems.forEach(function(item, idx) { %>
-        <div>
-          <p class="mb-1 text-xs text-gray-500"><%= item %></p>
-          <div class="toggle-pair">
-            <div>
+        <td class="px-1 py-1">
+          <div class="flex gap-0.5">
+            <span>
               <input
                 type="radio"
                 class="item-radio peer sr-only"
@@ -65,9 +71,9 @@
                 value="pass"
                 <%= (row.items[item] || 'pass') === 'pass' ? 'checked' : '' %>
               >
-              <label class="toggle-pass-label" for="item-<%= row.student.id %>-<%= idx %>-pass">ผ่าน</label>
-            </div>
-            <div>
+              <label class="pill-pass-label" for="item-<%= row.student.id %>-<%= idx %>-pass">ผ่าน</label>
+            </span>
+            <span>
               <input
                 type="radio"
                 class="item-radio peer sr-only"
@@ -77,23 +83,21 @@
                 value="fail"
                 <%= row.items[item] === 'fail' ? 'checked' : '' %>
               >
-              <label class="toggle-fail-label" for="item-<%= row.student.id %>-<%= idx %>-fail">ไม่ผ่าน</label>
-            </div>
+              <label class="pill-fail-label" for="item-<%= row.student.id %>-<%= idx %>-fail">ไม่ผ่าน</label>
+            </span>
           </div>
-        </div>
+        </td>
         <% }) %>
-      </div>
-    </div>
-
-    <div>
-      <label class="field-label">หมายเหตุ</label>
-      <input type="text" class="field-input note-input" value="<%= row.note %>" placeholder="หมายเหตุ (ถ้ามี)">
-    </div>
-  </div>
-  <% }) %>
+        <td class="px-1 py-1">
+          <input type="text" class="note-input w-28 rounded-md border border-gray-300 px-1.5 py-1 text-xs focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30" value="<%= row.note %>" placeholder="หมายเหตุ">
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
 </div>
 
-<div class="fixed inset-x-0 bottom-0 z-10 border-t border-gray-200 bg-white/95 px-3 py-3 backdrop-blur">
+<div class="fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 px-3 py-3 backdrop-blur">
   <div class="mx-auto max-w-2xl">
     <button id="save-btn" type="button" class="btn-primary w-full">บันทึกทั้งหมด</button>
   </div>
