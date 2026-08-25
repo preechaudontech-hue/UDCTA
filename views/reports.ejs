@@ -40,14 +40,23 @@
     </thead>
     <tbody class="divide-y divide-gray-100">
       <% summary.forEach(function(row) { %>
+      <% const present = row.present_count || 0; const late = row.late_count || 0; const absent = row.absent_count || 0; const uniformFail = row.uniform_fail_count || 0; %>
       <tr>
         <td class="px-3 py-2"><%= row.student_code %></td>
         <td class="px-3 py-2 font-medium text-gray-800"><%= row.full_name %></td>
         <td class="px-3 py-2 text-gray-500"><%= row.class_room %></td>
-        <td class="px-3 py-2 text-center"><%= row.present_count || 0 %></td>
-        <td class="px-3 py-2 text-center"><%= row.late_count || 0 %></td>
-        <td class="px-3 py-2 text-center"><%= row.absent_count || 0 %></td>
-        <td class="px-3 py-2 text-center"><%= row.uniform_fail_count || 0 %></td>
+        <td class="px-3 py-2 text-center">
+          <span class="stat-badge <%= present > 0 ? 'stat-badge-present' : 'stat-badge-zero' %>"><%= present %></span>
+        </td>
+        <td class="px-3 py-2 text-center">
+          <span class="stat-badge <%= late > 0 ? 'stat-badge-late' : 'stat-badge-zero' %>"><%= late %></span>
+        </td>
+        <td class="px-3 py-2 text-center">
+          <span class="stat-badge <%= absent > 0 ? 'stat-badge-absent' : 'stat-badge-zero' %>"><%= absent %></span>
+        </td>
+        <td class="px-3 py-2 text-center">
+          <span class="stat-badge <%= uniformFail > 0 ? 'stat-badge-absent' : 'stat-badge-zero' %>"><%= uniformFail %></span>
+        </td>
       </tr>
       <% }) %>
     </tbody>

@@ -41,4 +41,19 @@
   .pill-fail-label {
     @apply block cursor-pointer whitespace-nowrap rounded border border-gray-300 px-1 py-0.5 text-center text-[9px] font-medium text-gray-600 peer-checked:border-rose-600 peer-checked:bg-rose-600 peer-checked:text-white;
   }
+  .stat-badge {
+    @apply inline-flex min-w-[1.75rem] justify-center rounded-full px-2 py-0.5 text-xs font-semibold;
+  }
+  .stat-badge-zero {
+    @apply bg-gray-100 text-gray-400;
+  }
+  .stat-badge-present {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+  .stat-badge-late {
+    @apply bg-amber-100 text-amber-700;
+  }
+  .stat-badge-absent {
+    @apply bg-rose-100 text-rose-700;
+  }
 }
