@@ -24,7 +24,16 @@
      descendant selector — if the peer input and the styled element aren't
      direct siblings under the same parent, peer-checked never fires. */
   .pill-label {
-    @apply block cursor-pointer whitespace-nowrap rounded border border-gray-300 px-1 py-0.5 text-center text-[10px] font-medium text-gray-600 peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/40;
+    @apply block cursor-pointer whitespace-nowrap rounded border border-gray-300 px-1 py-0.5 text-center text-[10px] font-medium text-gray-600;
+  }
+  .pill-label-present {
+    @apply peer-checked:border-emerald-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500/40;
+  }
+  .pill-label-late {
+    @apply peer-checked:border-amber-500 peer-checked:bg-amber-500 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400/40;
+  }
+  .pill-label-absent {
+    @apply peer-checked:border-rose-600 peer-checked:bg-rose-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-rose-500/40;
   }
   .pill-pass-label {
     @apply block cursor-pointer whitespace-nowrap rounded border border-gray-300 px-1 py-0.5 text-center text-[9px] font-medium text-gray-600 peer-checked:border-emerald-600 peer-checked:bg-emerald-600 peer-checked:text-white;
