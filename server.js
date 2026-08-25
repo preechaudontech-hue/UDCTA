@@ -92,7 +92,7 @@ app.get("/checkin", async (req, res, next) => {
 
       rows = students.map((s) => ({
         student: s,
-        status: attendanceByStudent[s.id] || "present",
+        status: attendanceByStudent[s.id] || "absent",
         items: (uniformByStudent[s.id] && uniformByStudent[s.id].items) || {},
         note: (uniformByStudent[s.id] && uniformByStudent[s.id].note) || "",
       }));

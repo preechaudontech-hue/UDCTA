@@ -53,7 +53,7 @@
                 value="<%= key %>"
                 <%= row.status === key ? 'checked' : '' %>
               >
-              <label class="pill-label" for="status-<%= row.student.id %>-<%= key %>"><%= label %></label>
+              <label class="pill-label pill-label-<%= key %>" for="status-<%= row.student.id %>-<%= key %>"><%= label %></label>
             </span>
             <% }) %>
           </div>
