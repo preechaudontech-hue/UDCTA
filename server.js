@@ -47,6 +47,18 @@ function defaultTerm() {
   return `${term}/${buddhistYear}`;
 }
 
+// Thai names are stored as one string (title + given name + surname). Split
+// on the last space so "นายจรณ์ ทองสอาด" becomes ชื่อ "นายจรณ์" / สกุล "ทองสอาด".
+function splitThaiName(fullName) {
+  const trimmed = (fullName || "").trim();
+  const lastSpace = trimmed.lastIndexOf(" ");
+  if (lastSpace === -1) return { firstName: trimmed, lastName: "" };
+  return {
+    firstName: trimmed.slice(0, lastSpace).trim(),
+    lastName: trimmed.slice(lastSpace + 1).trim(),
+  };
+}
+
 async function getRooms() {
   const { rows } = await pool.query(
     "SELECT DISTINCT class_room FROM students WHERE active = TRUE ORDER BY class_room"
@@ -460,6 +472,37 @@ app.get("/grades/summary", async (req, res, next) => {
     );
 
     res.render("grades_summary", { rooms, room, term, summary });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/roster", async (req, res, next) => {
+  try {
+    const rooms = await getRooms();
+    const room = req.query.room || "";
+
+    const params = [];
+    let roomFilter = "";
+    if (room) {
+      params.push(room);
+      roomFilter = `AND class_room = $${params.length}`;
+    }
+
+    const { rows: students } = await pool.query(
+      `SELECT student_code, full_name, class_room FROM students
+       WHERE active = TRUE ${roomFilter}
+       ORDER BY class_room, student_code`,
+      params
+    );
+
+    const list = students.map((s) => ({
+      student_code: s.student_code,
+      class_room: s.class_room,
+      ...splitThaiName(s.full_name),
+    }));
+
+    res.render("roster", { rooms, room, list });
   } catch (err) {
     next(err);
   }

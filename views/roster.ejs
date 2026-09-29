@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+<h1 class="mb-4 text-xl font-bold text-gray-800 print:hidden">ใบรายชื่อนักเรียนทุน กสศ.</h1>
+
+<form method="get" class="card mb-4 flex items-end gap-2 print:hidden">
+  <div class="flex-1">
+    <label class="field-label" for="room">ห้อง/สาขา</label>
+    <select class="field-input" id="room" name="room" onchange="this.form.submit()">
+      <option value="">ทุกห้อง</option>
+      <% rooms.forEach(function(r) { %>
+      <option value="<%= r %>" <%= r === room ? 'selected' : '' %>><%= r %></option>
+      <% }) %>
+    </select>
+  </div>
+  <button type="button" class="btn-primary" onclick="window.print()">พิมพ์</button>
+</form>
+
+<div class="mb-3 hidden text-center print:block">
+  <p class="text-base font-semibold">ใบรายชื่อนักเรียนทุน กสศ.</p>
+  <p class="text-sm">แผนกเทคโนโลยีสารสนเทศ วิทยาลัยเทคนิคอุดรธานี<%= room ? ' — ห้อง ' + room : '' %></p>
+</div>
+
+<div class="card overflow-x-auto p-0 print:shadow-none print:ring-0">
+  <table class="w-full min-w-[420px] text-sm">
+    <thead>
+      <tr class="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 print:bg-white">
+        <th class="px-3 py-2 text-center">ลำดับ</th>
+        <th class="px-3 py-2">รหัส</th>
+        <th class="px-3 py-2">ชื่อ</th>
+        <th class="px-3 py-2">สกุล</th>
+        <% if (!room) { %>
+        <th class="px-3 py-2">ห้อง</th>
+        <% } %>
+        <th class="px-3 py-2">หมายเหตุ</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% list.forEach(function(s, idx) { %>
+      <tr>
+        <td class="px-3 py-2 text-center text-gray-500"><%= idx + 1 %></td>
+        <td class="px-3 py-2"><%= s.student_code %></td>
+        <td class="px-3 py-2"><%= s.firstName %></td>
+        <td class="px-3 py-2"><%= s.lastName %></td>
+        <% if (!room) { %>
+        <td class="px-3 py-2 text-gray-500"><%= s.class_room %></td>
+        <% } %>
+        <td class="px-3 py-2"></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('partials/footer') %>
