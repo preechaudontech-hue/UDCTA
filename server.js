@@ -37,6 +37,16 @@ function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
+const GRADE_POINTS = [4, 3.5, 3, 2.5, 2, 1.5, 1, 0];
+
+function defaultTerm() {
+  const now = new Date();
+  const buddhistYear = now.getFullYear() + 543;
+  const month = now.getMonth() + 1; // 1-12
+  const term = month >= 5 && month <= 10 ? 1 : 2;
+  return `${term}/${buddhistYear}`;
+}
+
 async function getRooms() {
   const { rows } = await pool.query(
     "SELECT DISTINCT class_room FROM students WHERE active = TRUE ORDER BY class_room"
@@ -332,6 +342,124 @@ app.get("/api/reports/export", async (req, res, next) => {
       `attachment; filename=report_${start}_to_${end}.csv`
     );
     res.send(csvData);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/grades", async (req, res, next) => {
+  try {
+    const rooms = await getRooms();
+    const term = req.query.term || defaultTerm();
+    const room = req.query.room || "";
+    const studentId = req.query.student_id ? Number(req.query.student_id) : null;
+
+    let students = [];
+    if (room) {
+      const { rows } = await pool.query(
+        "SELECT * FROM students WHERE active = TRUE AND class_room = $1 ORDER BY student_code",
+        [room]
+      );
+      students = rows;
+    }
+
+    let student = null;
+    let subjects = [];
+    if (studentId) {
+      const { rows } = await pool.query("SELECT * FROM students WHERE id = $1", [studentId]);
+      student = rows[0] || null;
+      if (student) {
+        const { rows: gradeRows } = await pool.query(
+          "SELECT subject_name, credit_hours, grade_point FROM grade_records WHERE student_id = $1 AND term = $2 ORDER BY id",
+          [studentId, term]
+        );
+        subjects = gradeRows;
+      }
+    }
+
+    res.render("grades", {
+      rooms,
+      room,
+      term,
+      students,
+      student,
+      subjects,
+      gradePoints: GRADE_POINTS,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/api/grades/save", async (req, res, next) => {
+  const client = await pool.connect();
+  try {
+    const { student_id, term, subjects } = req.body;
+    if (!student_id || !term || !Array.isArray(subjects)) {
+      return res.status(400).json({ ok: false, error: "missing student_id, term, or subjects" });
+    }
+
+    const cleaned = subjects
+      .map((s) => ({
+        subject_name: String(s.subject_name || "").trim(),
+        credit_hours: Number(s.credit_hours),
+        grade_point: Number(s.grade_point),
+      }))
+      .filter((s) => s.subject_name && !Number.isNaN(s.credit_hours) && !Number.isNaN(s.grade_point));
+
+    await client.query("BEGIN");
+    await client.query("DELETE FROM grade_records WHERE student_id = $1 AND term = $2", [student_id, term]);
+    for (const s of cleaned) {
+      await client.query(
+        `INSERT INTO grade_records (student_id, term, subject_name, credit_hours, grade_point)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [student_id, term, s.subject_name, s.credit_hours, s.grade_point]
+      );
+    }
+    await client.query("COMMIT");
+
+    const totalCredits = cleaned.reduce((sum, s) => sum + s.credit_hours, 0);
+    const gpa = totalCredits
+      ? cleaned.reduce((sum, s) => sum + s.credit_hours * s.grade_point, 0) / totalCredits
+      : null;
+
+    res.json({ ok: true, gpa, totalCredits });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    next(err);
+  } finally {
+    client.release();
+  }
+});
+
+app.get("/grades/summary", async (req, res, next) => {
+  try {
+    const rooms = await getRooms();
+    const term = req.query.term || defaultTerm();
+    const room = req.query.room || "";
+
+    const params = [term];
+    let roomFilter = "";
+    if (room) {
+      params.push(room);
+      roomFilter = `AND s.class_room = $${params.length}`;
+    }
+
+    const { rows: summary } = await pool.query(
+      `SELECT s.id, s.student_code, s.full_name, s.class_room,
+              COALESCE(SUM(g.credit_hours), 0) AS total_credits,
+              CASE WHEN SUM(g.credit_hours) > 0
+                   THEN SUM(g.credit_hours * g.grade_point) / SUM(g.credit_hours)
+                   ELSE NULL END AS gpa
+       FROM students s
+       LEFT JOIN grade_records g ON g.student_id = s.id AND g.term = $1
+       WHERE s.active = TRUE ${roomFilter}
+       GROUP BY s.id
+       ORDER BY s.class_room, s.student_code`,
+      params
+    );
+
+    res.render("grades_summary", { rooms, room, term, summary });
   } catch (err) {
     next(err);
   }
