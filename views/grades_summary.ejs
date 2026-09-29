@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+<h1 class="mb-4 text-xl font-bold text-gray-800">สรุปผลการเรียนเฉลี่ย (GPA)</h1>
+
+<form method="get" class="card mb-4 space-y-3">
+  <div>
+    <label class="field-label" for="term">ภาคเรียน</label>
+    <input class="field-input" type="text" id="term" name="term" value="<%= term %>" placeholder="เช่น 1/2569">
+  </div>
+  <div>
+    <label class="field-label" for="room">ห้อง/สาขา</label>
+    <select class="field-input" id="room" name="room">
+      <option value="">ทุกห้อง</option>
+      <% rooms.forEach(function(r) { %>
+      <option value="<%= r %>" <%= r === room ? 'selected' : '' %>><%= r %></option>
+      <% }) %>
+    </select>
+  </div>
+  <button type="submit" class="btn-primary w-full">แสดงสรุป</button>
+</form>
+
+<div class="card overflow-x-auto p-0">
+  <table class="w-full min-w-[480px] text-sm">
+    <thead>
+      <tr class="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <th class="px-3 py-2">รหัส</th>
+        <th class="px-3 py-2">ชื่อ-สกุล</th>
+        <th class="px-3 py-2">ห้อง</th>
+        <th class="px-3 py-2 text-center">หน่วยกิตรวม</th>
+        <th class="px-3 py-2 text-center">GPA</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% summary.forEach(function(row) { %>
+      <% const gpa = row.gpa === null ? null : Number(row.gpa); %>
+      <% let badgeClass = 'stat-badge-zero'; if (gpa !== null) { badgeClass = gpa >= 3 ? 'stat-badge-present' : gpa >= 2 ? 'stat-badge-late' : 'stat-badge-absent'; } %>
+      <tr>
+        <td class="px-3 py-2"><%= row.student_code %></td>
+        <td class="px-3 py-2 font-medium text-gray-800"><%= row.full_name %></td>
+        <td class="px-3 py-2 text-gray-500"><%= row.class_room %></td>
+        <td class="px-3 py-2 text-center"><%= row.total_credits %></td>
+        <td class="px-3 py-2 text-center">
+          <span class="stat-badge <%= badgeClass %>"><%= gpa === null ? '-' : gpa.toFixed(2) %></span>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<a href="/grades?room=<%= encodeURIComponent(room) %>&term=<%= encodeURIComponent(term) %>" class="mt-3 block text-center text-sm text-brand underline">กลับไปกรอกเกรดรายบุคคล</a>
+<%- include('partials/footer') %>
